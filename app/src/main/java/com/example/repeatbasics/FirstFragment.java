@@ -1,18 +1,22 @@
 package com.example.repeatbasics;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.databinding.DataBindingUtil;
 
+import com.example.repeatbasics.databinding.FragmentFirstBinding;
+
+import static com.example.repeatbasics.MainActivity.mFragmentController;
 
 public class FirstFragment extends Fragment {
 
     private MainContract.Listener mListener;
+    private FragmentFirstBinding mBinding;
+
 
     public FirstFragment() {
         // Required empty public constructor
@@ -26,15 +30,11 @@ public class FirstFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_first, container, false);
-        Button btnFirstFragment = (Button) view.findViewById(R.id.btn_first_fragment);
-        btnFirstFragment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mListener != null) mListener.updateFragments(MainContract.FragmentType.TOP);
-            }
-        });
-        return view;
+        mBinding = DataBindingUtil.inflate(
+                inflater, R.layout.fragment_first, container, false);
+        mBinding.setFragmentcontroller(mFragmentController);
+        mBinding.setHandler(this);
+        return mBinding.getRoot();
     }
 
 
@@ -47,6 +47,14 @@ public class FirstFragment extends Fragment {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
+    }
+
+    public void updateUI(){
+      int count = mFragmentController.getFirstfragcounter();
+      count++;
+      mFragmentController.setFirstfragcounter(count);
+      mBinding.setFragmentcontroller(mFragmentController);
+      mListener.updateFragments(MainContract.FragmentType.TOP);
     }
 
     @Override
